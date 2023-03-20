@@ -1,4 +1,4 @@
-![Blue Blocker Marquee](assets/marquee.png)
+![osu! Blocker Marquee](assets/marquee.png)
 # osu! Blocker
 Blocks all osu! players on twitter.com
 
@@ -26,4 +26,10 @@ For now, look below.
 4. Click `Load Temporary Add-on` in the top right and select `manifest.json` in the cloned directory
 
 NOTE: You may need to replace instances of `browser.storage.sync` with `browser.storage.local` for local firefox development.
+
+
+
+### Credits
+
+Full credit goes to kheina-com for his original extension Blue-Blocker, of which this is a fork.
 
