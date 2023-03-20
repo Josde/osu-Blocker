@@ -1,5 +1,5 @@
 import { ClearCache, DefaultOptions, SetOptions, HandleInstructionsResponse, HandleHomeTimeline } from '../shared.js';
-
+// TODO: Change back browser.storage.local to browser.storage.sync before release
 document.addEventListener("blue-blocker-event", function (e) {
 	ClearCache();
 

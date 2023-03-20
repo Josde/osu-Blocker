@@ -1,15 +1,14 @@
 ![Blue Blocker Marquee](assets/marquee.png)
-# Blue Blocker
-Blocks all Verified Twitter Blue users on twitter.com
+# osu! Blocker
+Blocks all osu! players on twitter.com
 
 ## Usage
-Nothing! Just install and say goodbye to all the paid blue checkmarks!
+Nothing! Just install and say goodbye to all idiots!
 
-By default, Blue Blocker does not block users you follow who have purchased Twitter Blue. You can enable this from the extension settings.
+By default, osu! Blocker does not block users you follow. You can enable this from the extension settings.
 
 ## Install
-[![Available from Chrome Webstore](assets/chrome.png)](https://chrome.google.com/webstore/detail/blue-blocker/jgpjphkbfjhlbajmmcoknjjppoamhpmm)
-[![Available from Firefox Add-ons](assets/firefox.png)](https://addons.mozilla.org/en-US/firefox/addon/blue-blocker/)
+For now, look below.
 
 ## Development
 ### Chrome
@@ -21,7 +20,6 @@ By default, Blue Blocker does not block users you follow who have purchased Twit
 
 ### Firefox
 1. Clone the repository
-2. Rename `firefox-manifest.json` to `manifest.json`
 	(feel free to delete or rename the other `manifest.json`)
 3. Visit the [firefox addon debugging page](about:debugging#/runtime/this-firefox)
 	(or enter `about:debugging#/runtime/this-firefox` in the Firefox url bar)
@@ -29,11 +27,3 @@ By default, Blue Blocker does not block users you follow who have purchased Twit
 
 NOTE: You may need to replace instances of `browser.storage.sync` with `browser.storage.local` for local firefox development.
 
-## TODO
-1. Missing support for these requests
-	- search (all types)
-	- quote tweets (the quoted tweet)
-	- "you might like" column
-	- "who to follow" sections
-2. Remove the blocked users from the dom
-3. Look into an issue where users can be missed

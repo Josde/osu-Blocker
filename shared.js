@@ -11,8 +11,6 @@ s.type = "text/javascript";
 export const DefaultOptions = {
 	// by default, spare the people we follow from getting blocked
 	blockFollowing: false,
-	skipVerified: true,
-	blockNftAvatars: false,
 };
 
 // when parsing a timeline response body, these are the paths to navigate in the json to retrieve the "instructions" object
@@ -63,12 +61,10 @@ export function SetOptions(items) {
 	options = items;
 }
 
-const ReasonBlueVerified = 1;
-const ReasonNftAvatar = 1;
+const ReasonOsuPlayer = 1;
 
 const ReasonMap = {
-	[ReasonBlueVerified]: "Twitter Blue verified",
-	[ReasonNftAvatar]: "NFT avatar",
+	[ReasonOsuPlayer]: "osu! Player lmao",
 };
 
 const BlockCache = new Set();
@@ -103,40 +99,32 @@ export function BlockUser(user, user_id, headers, reason, attempt=1) {
 	ajax.send(formdata);
 }
 
-export function BlockBlueVerified(user, headers) {
-	// since we can be fairly certain all user objects will be the same, break this into a separate function
-	if (user.is_blue_verified) {
-		if (
-			// group for block-following option
-			!(options.blockFollowing || (!user.legacy.following && !user.super_following))
-		) {
-			console.log(`did not block Twitter Blue verified user ${user.legacy.name} (@${user.legacy.screen_name}) because you follow them.`);
-		}
-		else if (
-			// group for skip-verified option
-			!(!options.skipVerified || !user.legacy.verified)
-		) {
-			console.log(`did not block Twitter Blue verified user ${user.legacy.name} (@${user.legacy.screen_name}) because they are verified through other means.`);
-		}
-		else {
-			BlockUser(user, String(user.rest_id), headers, ReasonBlueVerified);
-		}
+export function IsOsuPlayer(user) {
+	if (user.legacy.description.toLowerCase().includes("osu!") || (user.legacy.entities.url.urls.length > 0 && user.legacy.entities.url.urls[0].display_url.toLowerCase().includes("osu.ppy.sh"))) {
+		return true;
 	}
-	if (options.blockNftAvatars && user.has_nft_avatar) {
+	return false;
+}
+
+export function BlockOsuPlayer(user, headers) {
+	// since we can be fairly certain all user objects will be the same, break this into a separate function
+	console.error(user.legacy)
+	if (IsOsuPlayer(user)) {
 		if (
 			// group for block-following option
 			!(options.blockFollowing || (!user.legacy.following && !user.super_following))
 		) {
-			console.log(`did not block user with NFT avatar ${user.legacy.name} (@${user.legacy.screen_name}) because you follow them.`);
+			console.log(`did not block user ${user.legacy.name} (@${user.legacy.screen_name}) because you follow them.`);
 		}
 		else {
-			BlockUser(user, String(user.rest_id), headers, ReasonNftAvatar);
+			BlockUser(user, String(user.rest_id), headers, ReasonOsuPlayer);
 		}
 	}
 }
 
 export function ParseTimelineTweet(tweet, headers) {
 	let user = tweet;
+	console.error(user);
 	for (const key of UserObjectPath) {
 		if (user.hasOwnProperty(key))
 		{ user = user[key]; }
@@ -147,7 +135,7 @@ export function ParseTimelineTweet(tweet, headers) {
 		return;
 	}
 
-	BlockBlueVerified(user, headers)
+	BlockOsuPlayer(user, headers)
 }
 
 export function HandleInstructionsResponse(e, body) {
@@ -178,6 +166,7 @@ export function HandleInstructionsResponse(e, body) {
 
 	// tweets object should now contain an array of all returned tweets
 	for (const tweet of tweets.entries) {
+		console.error(ParseTimelineTweet(tweet.content.itemContent, e.detail.request.headers));
 		// parse each tweet for the user object
 		switch (tweet?.content?.entryType) {
 			case null:
@@ -205,7 +194,7 @@ export function HandleHomeTimeline(e, body) {
 	// so this url straight up gives us an array of users, so just use that lmao
 	for (const [user_id, user] of Object.entries(body.globalObjects.users)) {
 		// the user object is a bit different, so reshape it a little
-		BlockBlueVerified({
+		BlockOsuPlayer({
 			is_blue_verified: user.ext_is_blue_verified,
 			has_nft_avatar: user.ext_has_nft_avatar,
 			legacy: {
@@ -213,6 +202,8 @@ export function HandleHomeTimeline(e, body) {
 				screen_name: user.screen_name,
 				following: user?.following,
 				verified: user?.verified,
+				description: user?.description,
+				url: user?.url,
 			},
 			super_following: user.ext?.superFollowMetadata?.r?.ok?.superFollowing,
 			rest_id: user_id,
